@@ -1,11 +1,10 @@
-package commands
+package commands.adminCategory
 
-import Command
-import CommandManager
+import utilities.commandsutility.Command
+import utilities.commandsutility.CommandManager
 import Main
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.Command.Option
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utilities.categoryUtility.Categories
 import utilities.staffUtility.Roles
@@ -97,7 +96,7 @@ class Help(private val bot: Main.Companion) : Command {
                     embed.setFooter("· Usage; r?help <command>")
                 } else {
                     embed.setTitle(" ${args[0]} ??")
-                    embed.setDescription("> This Command / Category is not existing on my system please use `r?help` to have more information")
+                    embed.setDescription("> This utilities.commandsutility.Command / Category is not existing on my system please use `r?help` to have more information")
                     embed.setColor(Color(255, 0, 0))
                 }
             }

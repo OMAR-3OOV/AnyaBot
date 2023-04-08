@@ -1,6 +1,6 @@
 package utilities.categoryUtility
 
-import Command
+import utilities.commandsutility.Command
 
 data class CategoryManager(val category: Categories) {
 

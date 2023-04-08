@@ -1,11 +1,10 @@
 package commands.adminCategory
 
-import Command
+import utilities.commandsutility.Command
 import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.Command.Option
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utilities.categoryUtility.Categories
 import utilities.staffUtility.Roles

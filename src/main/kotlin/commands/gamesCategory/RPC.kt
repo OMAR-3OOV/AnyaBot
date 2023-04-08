@@ -1,7 +1,7 @@
 package commands.gamesCategory
 
-import Command
-import gameUtilities.RPSUtility
+import utilities.commandsutility.Command
+import utilities.games.rpsutility.RPSUtility
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -43,6 +43,18 @@ class RPC : Command {
         if (args.isNotEmpty()) {
             var opponent = args[0]
 
+            if (opponent.equals("-r")) {
+                val rps = RPSUtility(
+                    user,
+                    null,
+                    event.guild,
+                    event.channel.asTextChannel(),
+                    embed
+                )
+                rps.isUnlimitedLoop = true
+                return
+            }
+
             val regex = Pattern.compile(Message.MentionType.USER.pattern.toString())
             val matcher = regex.matcher(opponent)
 
@@ -54,7 +66,13 @@ class RPC : Command {
             }
 
             val target = event.guild.retrieveMemberById(opponent).complete().user
-            val rps = RPSUtility(user, target, event.guild, event.channel.asTextChannel(), embed)
+            val rps = RPSUtility(
+                user,
+                target,
+                event.guild,
+                event.channel.asTextChannel(),
+                embed
+            )
 
             if (args.size > 1) {
                 if (args[1] == "-r") {
@@ -62,11 +80,18 @@ class RPC : Command {
                 }
             }
         } else {
-            RPSUtility(user, null, event.guild, event.channel.asTextChannel(), embed)
+            RPSUtility(
+                user,
+                null,
+                event.guild,
+                event.channel.asTextChannel(),
+                embed
+            )
         }
     }
 
-    override fun onSlashCommand(event: SlashCommandInteractionEvent
+    override fun onSlashCommand(
+        event: SlashCommandInteractionEvent
     ) {
         TODO("Not yet implemented")
     }

@@ -4,3 +4,6 @@
 /out/
 /out/production/classes/
 *.yml
+.env
+System/config.json
+src/main/kotlin/commands/adminCategory/testCommand.kt

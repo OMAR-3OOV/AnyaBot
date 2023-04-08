@@ -1,17 +1,18 @@
+package utilities.commandsutility
+
+import Main
 import utilities.categoryUtility.Categories
 import utilities.categoryUtility.CategoryManager
-import commands.Help
-import commands.Question
+import commands.adminCategory.Help
+import commands.funCategory.Question
 import commands.adminCategory.RolesManager
 import commands.adminCategory.Shutdown
+import commands.adminCategory.testCommand
 import commands.funCategory.PrivateMessenger
 import commands.gamesCategory.RPC
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import org.jetbrains.annotations.Nullable
-import utilities.messengerUtility.MessengerManager
 import utilities.staffUtility.RolesData
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
@@ -28,13 +29,14 @@ open class CommandManager(bot: Main.Companion) {
 
     init {
 
-        val (task, time) = measureTimedValue { addCommand(
+        val (time) = measureTimedValue { addCommand(
             Question(),
             Help(bot),
             RPC(),
             Shutdown(),
             RolesManager(),
-            PrivateMessenger()
+            PrivateMessenger(),
+            testCommand()
         )}
 
         println("Commands register time: $time")
@@ -50,9 +52,9 @@ open class CommandManager(bot: Main.Companion) {
      * Make sure that even if there is arguments existing the command will work,
      * so you should use if statement in command class to void this problem but , in other hand, it won't make any issues with command
      */
-    @Throws(NullPointerException::class)
-    open fun handleCommand(event: @Nullable MessageReceivedEvent, prefix: String) {
-        if (MessengerManager.dm.containsKey(event.author) && MessengerManager.dm[event.author]!!.channel == event.channel.asTextChannel()) return event.message.reply(":x: | You can't use Commands in the same channel during Messenger").queue { msg -> msg.delete().queueAfter(3, TimeUnit.SECONDS)}
+
+    open fun handleCommand(event: MessageReceivedEvent, prefix: String) {
+        if (event.channel.type.isThread) return event.channel.sendMessage(":x: | Commands are not allowed in threads!").queue()
         val rolesData = RolesData(event.author)
 
         val split: List<String> =
@@ -84,7 +86,7 @@ open class CommandManager(bot: Main.Companion) {
     }
 
     /**
-     * Just to register the categories into hashmap & use them as a information and concept for the commands
+     * Just to register the categories into hashmap & use them as information and concept for the commands
      *
      * NOTE: This hashmap is just to get the categories and not the commands from the categories
      * first, because the way to call this hashmap is by using <category-name>:<category-id>.

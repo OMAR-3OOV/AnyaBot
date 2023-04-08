@@ -1,12 +1,12 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.10'
     id 'java'
     id 'application'
 }
 
 group 'org.system'
 mainClassName = 'MainKt'
-version '0.0.1'
+version '1.0.0'
 
 sourceCompatibility = JavaVersion.VERSION_18
 compileJava.options.encoding("UTF-8")
@@ -25,12 +25,16 @@ repositories {
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:5.0.0-alpha.20") // discord jda api
-    implementation("com.github.minndevelopment:jda-ktx:fc7d7de") // discord jda api kotlin supported
-    implementation('me.carleslc.Simple-YAML:Simple-Yaml:1.8') // yml api
+    implementation("net.dv8tion:JDA:5.0.0-beta.6") // discord jda api
+    implementation("com.github.minndevelopment:jda-ktx:0.10.0-beta.1") // discord jda api kotlin supported
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation('me.carleslc.Simple-YAML:Simple-Yaml:1.8.3') // yml api
     implementation("io.github.portlek:jsongration:2.0.11")
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-beta0' // logback api
-    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4') // kotlin support
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") // kotlin support
+    implementation('io.github.cdimascio:dotenv-kotlin:6.4.0') // dot env file support
+    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4')
+    implementation 'com.google.guava:guava:31.1-jre'
 }
 
 test {

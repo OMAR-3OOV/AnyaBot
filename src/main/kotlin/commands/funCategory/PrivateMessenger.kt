@@ -1,6 +1,6 @@
 package commands.funCategory
 
-import Command
+import utilities.commandsutility.Command
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
@@ -84,11 +84,11 @@ class PrivateMessenger : Command {
             val messenger = MessengerManager(user, channel)
 
             if (MessengerManager.dm.containsKey(event.author) && MessengerManager.messenger.containsKey(user)) {
-                event.channel.sendMessage(":x: | You're already with ${MessengerManager.dm[event.author]!!.getter.name} in messenger!")
+                event.channel.sendMessage(":x: | You're already with ${MessengerManager.dm[event.author]!!.sender.name} in messenger!")
                     .queue()
             }
 
-            messenger.setSender(event.author)
+            messenger.setGetter(event.author)
             messenger.messengerStart()
         } catch (userErr: IndexOutOfBoundsException) {
             event.channel.sendMessage(":x: | This user is not exist or wrong!").queue()

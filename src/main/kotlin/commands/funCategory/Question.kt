@@ -1,22 +1,10 @@
-package commands
+package commands.funCategory
 
-import Command
-import commands.adminCategory.RolesManager
-import commands.adminCategory.Shutdown
-import commands.funCategory.PrivateMessenger
-import commands.gamesCategory.RPC
-import dev.minn.jda.ktx.messages.Embed
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.User
+import utilities.commandsutility.Command
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utilities.categoryUtility.Categories
 import utilities.staffUtility.Roles
-import java.util.function.Function
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTimedValue
 
 class Question: Command {
     override fun handle(args: List<String>, event: MessageReceivedEvent) {

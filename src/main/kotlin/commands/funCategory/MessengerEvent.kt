@@ -20,18 +20,28 @@ class MessengerEvent : ListenerAdapter() {
             val messenger: MessengerManager = MessengerManager.messenger[event.author]!!
             if (!messenger.started) return
 
-            messenger.sendMessageToChannel(event.message)
+            if (event.message.attachments.isNotEmpty()) {
+                for (attachment in event.message.attachments) {
+                    messenger.sendMessageToChannelImage(event.message, attachment)
+                }
+            } else {
+                messenger.sendMessageToChannel(event.message)
+            }
         } else if (event.isFromGuild && event.isFromThread) {
             if (!MessengerManager.dm.containsKey(event.author)) return
             val messenger: MessengerManager = MessengerManager.dm[event.author]!!
 
             if (!messenger.started) return
-            if (messenger.getThread() != event.channel.asThreadChannel()) return println("WRONG!") // Check if the thread exist
-            if (event.message.contentRaw.contains("r?")) return event.message.addReaction(Emoji.fromUnicode("❌"))
-                .queue()  // Check if the user using command, so it will NOT work
+            if (messenger.getThread().idLong != event.channel.asThreadChannel().idLong) return println("WRONG!") // Check if the thread exist
             if (messenger.pause) return
 
-            messenger.sendMessageToDm(event.message)
+            if (event.message.attachments.isNotEmpty()) {
+                for (attachment in event.message.attachments) {
+                    messenger.sendMessageToDmImage(event.message, attachment)
+                }
+            } else {
+                messenger.sendMessageToDm(event.message)
+            }
         }
     }
 
@@ -40,10 +50,10 @@ class MessengerEvent : ListenerAdapter() {
             val user = event.channel.asPrivateChannel().user
             if (!MessengerManager.messenger.containsKey(user)) return
             if (MessengerManager.messageCache.containsKey(event.messageIdLong)) {
-                val content: String = MessengerManager.messageCache[event.messageIdLong].toString()
+                val content: String = MessengerManager.senderMessagesHistory[event.messageIdLong]!!.contentRaw
                 val messenger = MessengerManager.messenger[user]!!
 
-                messenger.deleteGetterLastMessage(content)
+                messenger.senderMessageDeleted(event.messageIdLong, content)
             }
 
         } else if (event.isFromGuild && event.isFromThread) {
@@ -55,7 +65,7 @@ class MessengerEvent : ListenerAdapter() {
 
             if (MessengerManager.messageCache.containsKey(event.messageIdLong)) {
                 if (messenger.pause) return
-                messenger.deleteSenderLastMessage()
+                messenger.getterMessageDeleted(event.messageIdLong)
             }
         } else if (event.isFromGuild) {
             if (MessengerManager.managerMessage.containsKey(event.messageIdLong)) {
@@ -65,13 +75,17 @@ class MessengerEvent : ListenerAdapter() {
 
                 val msg = messenger.controlPanel().complete()
 
-                messenger.createThreadMessages(msg).queue { thread:ThreadChannel ->
-
-                    thread.sendMessage("${messenger.sender.asMention} Thread has been resumed you can start chatting with ${messenger.getter.name} again")
+                messenger.createThreadMessages(msg).queue { thread ->
+                    thread.sendMessage("${messenger.getter.asMention} Thread has been recreate you can continue chatting with ${messenger.sender.name} now!")
                         .queue()
+
                     messenger.setThread(thread)
                     thread.manager.setArchived(true).setLocked(true).queue()
                     messenger.setThreadChecker(false)
+
+                    // to resend the thread panel and pin it
+                    messenger.threadMessageInfoAction(thread)
+                    msg.editMessageEmbeds(messenger.defaultEmbed()).queue()
                 }
 
                 messenger.setMessage(msg)
@@ -87,11 +101,11 @@ class MessengerEvent : ListenerAdapter() {
             val messenger = MessengerManager.messenger[event.author]!!
             val message = event.message
 
-            messenger.editGetterLastMessage(message)
+            messenger.senderMessageEdit(message)
         } else if (event.isFromGuild && event.isFromThread) {
             if (!MessengerManager.dm.containsKey(event.author)) return
             val managerMessage = MessengerManager.dm[event.author]!!.message
-            if (MessengerManager.threadMessages[managerMessage.idLong]!! != event.channel.asThreadChannel()) return println("WRONG!")
+            if (MessengerManager.threadMessages[managerMessage.idLong]!!.idLong != event.channel.asThreadChannel().idLong) return println("WRONG!")
             if (!MessengerManager.dm[event.author]!!.started) return
 
             val messenger = MessengerManager.dm[event.author]!!
@@ -99,7 +113,7 @@ class MessengerEvent : ListenerAdapter() {
 
             if (messenger.pause) return
 
-            messenger.editSenderLastMessage(message)
+            messenger.getterMessageEdit(message)
         }
     }
 
@@ -110,11 +124,15 @@ class MessengerEvent : ListenerAdapter() {
                 val mm = MessengerManager.threadManager[event.channel.asThreadChannel()]!!
                 if (mm.isThread()) return
                 if (mm.started) {
-                    val thread = mm.message.createThreadChannel("${mm.getter.name} Messenger").complete()
+                    val thread = mm.message.createThreadChannel("${mm.sender.name} Messenger").complete()
 
-                    thread.sendMessage("${mm.sender.asMention} Thread has been resumed you can start chatting with ${mm.getter.name} again")
+                    // to resend the thread panel and pin it
+                    mm.threadMessageInfoAction(thread)
+
+                    thread.sendMessage("${mm.getter.asMention} Thread has been resumed you can start chatting with ${mm.sender.name} again")
                         .queue()
                     thread.manager.setArchived(true).setLocked(true).queue()
+
                     mm.setThread(thread)
                 }
             }
